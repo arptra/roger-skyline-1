@@ -1,0 +1,5 @@
+---
+- name: Copy webApp_tools
+  copy:
+      src: webApp_tools
+      dest: /home/deb/

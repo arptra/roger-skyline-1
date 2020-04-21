@@ -1,0 +1,20 @@
+---
+- name: Initialising Postfix
+  command: "{{ item }}"
+  with_items:
+      - debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Local only"
+      - debconf-set-selections <<< "postfix postfix/mailname string debian"
+ # when: postfix.stat.exists == false
+  register: postfix_installed
+
+- name: Installing Postfix
+  apt:
+      pkg: postfix
+      state: present
+      update_cache: yes
+
+- name: Installing Mailutils
+  apt:
+      pkg: mailutils
+      state: present
+      update_cache: yes

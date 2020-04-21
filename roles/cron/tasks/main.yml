@@ -1,0 +1,30 @@
+---
+- name: Copy check_changes to /home/deb/
+  copy:
+      src: check_changes
+      dest: /home/deb
+  register: cron
+
+- name: Creating schedule for update packages
+  cron:
+      name: "update.sh 0 4 * * 1"
+      weekday: 1
+      hour: 4
+      minute: 0
+      user: root
+      job: "/home/deb/check_changes/update.sh"
+
+- name: Creating schedule for reboot
+  cron:
+      name: "update.sh @reboot"
+      special_time: reboot
+      user: root
+      job: "/home/deb/check_changes/update.sh"
+
+- name: Creating schedule for notification
+  cron:
+      name: "check_last_modify.sh 0 0 * * *"
+      hour: 0
+      minute: 0
+      user: root
+      job: "/home/deb/check_changes/check_last_modify.sh 0 0 * * *"

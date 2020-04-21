@@ -1,0 +1,12 @@
+---
+- hosts: local
+  connection: local
+  become: true
+  become_method: sudo
+  roles:
+      - nginx
+      - python
+      - deploy
+      - tools
+      - mail
+      - cron

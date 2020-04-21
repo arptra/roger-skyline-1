@@ -1,0 +1,48 @@
+---
+- name: Clone/pull project repo
+  git: repo={{ project_repo }} dest={{ install_root }}/{{ project_name }} accept_hostkey=yes
+  become: yes
+  become_user: deb
+
+- name: Creating of webApp conf
+  copy:
+      src: webApp
+      dest: /etc/nginx/sites-available/
+
+- name: Symlinking webApp conf to /etc/nginx/sites-enabled
+  file:
+      src: /etc/nginx/sites-available/webApp
+      dest: /etc/nginx/sites-enabled/webApp
+      state: link
+
+- name: Creating of webApp.service
+  copy:
+      src: webApp.service      
+      dest: /etc/systemd/system/
+
+- name: Install VENV
+  script: files/install_venv.sh
+  become: yes
+  become_user: deb
+
+#- name: Restart services
+#  script: files/restart.sh
+
+- name: Creating self-encrypted SSL key and certificate
+  command: openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+     -subj /C=RU/ST=777/L=Moscow/O=brat/OU=brat/CN=192.168.100.100/emailAddress=brat@mail.com \
+     -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+
+- name: Copy self-signed.conf    
+  copy:
+      src: self-signed.conf
+      dest: /etc/nginx/snippets/
+
+- name: Copy  ssl-params.conf
+  copy:
+      src: ssl-params.conf
+      dest: /etc/nginx/snippets/
+- name: Restart services
+  script: files/restart.sh
+  notify:
+      - Restarts Nginx

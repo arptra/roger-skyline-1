@@ -1,0 +1,6 @@
+---
+project_name: webApp
+
+install_root: /home/deb
+
+project_repo: https://allmyrestprojects@bitbucket.org/allmyrestprojects/webapp.git
